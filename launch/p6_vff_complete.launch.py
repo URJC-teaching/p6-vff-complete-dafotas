@@ -100,6 +100,24 @@ def generate_launch_description():
         description='Maximum angular speed for robot'
     )
 
+    repulsive_gain_factor = DeclareLaunchArgument(
+        'repulsive_gain_factor',
+        default_value='0.5',
+        description='Gain factor for repulsive force'
+    )
+
+    repulsive_influence_distance = DeclareLaunchArgument(
+        'repulsive_influence_distance',
+        default_value='0.5',
+        description='Distance within which obstacles influence the robot'
+    )
+
+    stay_distance = DeclareLaunchArgument(
+        'stay_distance',
+        default_value='0.5',
+        description='Minimum distance to target to consider "arrived" (set to -1 for no stay distance)'
+    )
+
     target_class = DeclareLaunchArgument(
         'target_class',
         default_value='person'
@@ -158,6 +176,7 @@ def generate_launch_description():
             ])
         )
      )
+    
     include_yolo_class_detector_3d = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             PathJoinSubstitution([
@@ -173,13 +192,26 @@ def generate_launch_description():
         }.items()
     )
     
+    include_obstacle_detector = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution([
+                FindPackageShare('vff_control'),
+                'launch',
+                'obstacle_detector.launch.py'
+            ])
+        )
+     )
+    
     vff_controller_yolo = Node(
         package='p6_vff_complete',
         executable='p6_vff_complete_node',
         name='vff_controller_yolo',
         parameters=[
             {'max_linear_speed':LaunchConfiguration('max_linear_speed')},
-            {'max_angular_speed':LaunchConfiguration('max_angular_speed')}
+            {'max_angular_speed':LaunchConfiguration('max_angular_speed')},
+            {'repulsive_gain_factor':LaunchConfiguration('repulsive_gain_factor')},
+            {'repulsive_influence_distance':LaunchConfiguration('repulsive_influence_distance')},
+            {'stay_distance':LaunchConfiguration('stay_distance')}
         ],
         remappings=[
             ('/vel', '/cmd_vel'),
@@ -203,6 +235,9 @@ def generate_launch_description():
         namespace_arg,
         max_linear_speed,
         max_angular_speed,
+        repulsive_gain_factor,
+        repulsive_influence_distance,
+        stay_distance,
         target_class,
         base_frame,
         optical_frame,
@@ -211,6 +246,7 @@ def generate_launch_description():
         include_yolo,
         include_yolo_3d,
         include_yolo_class_detector_3d,
+        include_obstacle_detector,
 
         #Mi nodo
         vff_controller_yolo

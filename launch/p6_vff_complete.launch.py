@@ -114,7 +114,7 @@ def generate_launch_description():
 
     stay_distance = DeclareLaunchArgument(
         'stay_distance',
-        default_value='0.5',
+        default_value='-1.0',
         description='Minimum distance to target to consider "arrived" (set to -1 for no stay distance)'
     )
 
@@ -212,10 +212,10 @@ def generate_launch_description():
             {'repulsive_gain_factor':LaunchConfiguration('repulsive_gain_factor')},
             {'repulsive_influence_distance':LaunchConfiguration('repulsive_influence_distance')},
             {'stay_distance':LaunchConfiguration('stay_distance')}
-        ],
-        remappings=[
-            ('/vel', '/cmd_vel'),
         ]
+        #remappings=[
+        #    ('/vel', '/cmd_vel'),
+        #]
     )
     
     return LaunchDescription([

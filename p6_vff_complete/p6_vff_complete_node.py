@@ -26,7 +26,7 @@ class VFFControllerNode(Node):
         self.declare_parameter('max_angular_speed', 1.0)
         self.declare_parameter('repulsive_gain_factor', 1.0)
         self.declare_parameter('repulsive_influence_distance', 0.5)
-        self.declare_parameter('stay_distance', 0.5) # -1.0 means no stay distance (2D case)
+        self.declare_parameter('stay_distance', -1.0) # -1.0 means no stay distance (2D case)
 
         self.max_linear_speed = self.get_parameter('max_linear_speed').value
         self.max_angular_speed = self.get_parameter('max_angular_speed').value
@@ -37,20 +37,20 @@ class VFFControllerNode(Node):
         # Subscribers
         self.attractive_sub = self.create_subscription(
             Vector3,
-            'attractive_vector',
+            '/attractive_vector',
             self.attractive_callback,
             10
         )
 
         self.repulsive_sub = self.create_subscription(
             Vector3,
-            'repulsive_vector',
+            '/repulsive_vector',
             self.repulsive_callback,
             10
         )
 
         # Publisher
-        self.cmd_pub = self.create_publisher(Twist, 'vel', 10)
+        self.cmd_pub = self.create_publisher(Twist, '/cmd_vel', 10)
 
         # Internal state
         self.attractive_vec = Vector3()
@@ -116,28 +116,26 @@ class VFFControllerNode(Node):
             self.state = "searching"
         
         if self.state == "searching":
-            self.attractive_vec = Vector3()
             cmd.linear.x = 0.0
-            cmd.linear.y = 0.0
             cmd.angular.z = self.max_angular_speed
-            
+                    
         elif self.state == "found_person":
-                vff_x = self.attractive_vec.x - repulsive_force_x
-                vff_y = self.attractive_vec.y - repulsive_force_y
+            vff_x = self.attractive_vec.x - repulsive_force_x
+            vff_y = self.attractive_vec.y - repulsive_force_y
 
-                self.get_logger().info(f'VFF vector: x={vff_x:.2f}, y={vff_y:.2f}. Magnitude={math.hypot(vff_x, vff_y):.2f} Angle={math.degrees(math.atan2(vff_y, vff_x)):.2f} deg')
+            self.get_logger().info(f'VFF vector: x={vff_x:.2f}, y={vff_y:.2f}. Magnitude={math.hypot(vff_x, vff_y):.2f} Angle={math.degrees(math.atan2(vff_y, vff_x)):.2f} deg')
 
-                angle = math.atan2(vff_y, vff_x)
+            angle = math.atan2(vff_y, vff_x)
 
-                cmd.linear.x = min(self.max_linear_speed, math.hypot(vff_x, vff_y))
+            cmd.linear.x = min(self.max_linear_speed, math.hypot(vff_x, vff_y))
 
-                rotation_dir = 1.0 if angle >= 0 else -1.0 
-                # cmd.angular.z = rotation_dir * self.max_angular_speed
+            rotation_dir = 1.0 if angle >= 0 else -1.0 
+            # cmd.angular.z = rotation_dir * self.max_angular_speed
 
-                # ANGULAR_KP = 1.5 
-                # proportional_angular_speed = ANGULAR_KP * angle
-                # cmd.angular.z = max(min(angle, self.max_angular_speed), -self.max_angular_speed)
-                cmd.angular.z = rotation_dir * min(self.max_angular_speed, abs(angle))
+            # ANGULAR_KP = 1.5
+            # proportional_angular_speed = ANGULAR_KP * angle
+            # cmd.angular.z = max(min(angle, self.max_angular_speed), -self.max_angular_speed)
+            cmd.angular.z = rotation_dir * min(self.max_angular_speed, abs(angle))
 
         self.cmd_pub.publish(cmd)
         self.get_logger().debug(f'Cmd: linear={cmd.linear.x:.2f}, angular={cmd.angular.z:.2f}')

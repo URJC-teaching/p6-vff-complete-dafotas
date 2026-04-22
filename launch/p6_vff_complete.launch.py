@@ -90,19 +90,19 @@ def generate_launch_description():
     
     max_linear_speed = DeclareLaunchArgument(
         'max_linear_speed',
-        default_value='0.2',
+        default_value='0.1',
         description='Maximum linear speed for robot'
     )
 
     max_angular_speed = DeclareLaunchArgument(
         'max_angular_speed',
-        default_value='0.4',
+        default_value='1.0',
         description='Maximum angular speed for robot'
     )
 
     repulsive_gain_factor = DeclareLaunchArgument(
         'repulsive_gain_factor',
-        default_value='0.5',
+        default_value='0.3',
         description='Gain factor for repulsive force'
     )
 
@@ -114,7 +114,7 @@ def generate_launch_description():
 
     stay_distance = DeclareLaunchArgument(
         'stay_distance',
-        default_value='-1.0',
+        default_value='1.0',
         description='Minimum distance to target to consider "arrived" (set to -1 for no stay distance)'
     )
 
@@ -130,7 +130,7 @@ def generate_launch_description():
 
     optical_frame = DeclareLaunchArgument(
         'optical_frame',
-        default_value='camera_rgb_optical_frame'
+        default_value='camera_color_optical_frame'
     )
 
     include_yolo = IncludeLaunchDescription(
@@ -159,7 +159,7 @@ def generate_launch_description():
             
             # Funcionalidades
             'use_tracking': LaunchConfiguration('use_tracking'),
-            'use_3d': LaunchConfiguration('use_3d'),
+            'use_3d': 'True',
             'use_debug': LaunchConfiguration('use_debug'),
             
             # Namespace
@@ -246,8 +246,8 @@ def generate_launch_description():
         include_yolo,
         include_yolo_3d,
         include_yolo_class_detector_3d,
-        include_obstacle_detector,
+        # include_obstacle_detector,
 
         #Mi nodo
-        vff_controller_yolo
+        # vff_controller_yolo
     ])

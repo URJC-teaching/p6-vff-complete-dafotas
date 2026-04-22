@@ -22,11 +22,11 @@ class VFFControllerNode(Node):
         super().__init__('vff_controller_node')
 
         # Parameters
-        self.declare_parameter('max_linear_speed', 0.3)
-        self.declare_parameter('max_angular_speed', 1.0)
-        self.declare_parameter('repulsive_gain_factor', 1.0)
+        self.declare_parameter('max_linear_speed', 0.1)
+        self.declare_parameter('max_angular_speed', 0.6)
+        self.declare_parameter('repulsive_gain_factor', 0.3)
         self.declare_parameter('repulsive_influence_distance', 0.5)
-        self.declare_parameter('stay_distance', -1.0) # -1.0 means no stay distance (2D case)
+        self.declare_parameter('stay_distance', 1.0) # -1.0 means no stay distance (2D case)
 
         self.max_linear_speed = self.get_parameter('max_linear_speed').value
         self.max_angular_speed = self.get_parameter('max_angular_speed').value
@@ -37,14 +37,14 @@ class VFFControllerNode(Node):
         # Subscribers
         self.attractive_sub = self.create_subscription(
             Vector3,
-            '/attractive_vector',
+            'attractive_vector',
             self.attractive_callback,
             10
         )
 
         self.repulsive_sub = self.create_subscription(
             Vector3,
-            '/repulsive_vector',
+            'repulsive_vector',
             self.repulsive_callback,
             10
         )

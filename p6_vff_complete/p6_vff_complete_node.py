@@ -110,6 +110,7 @@ class VFFControllerNode(Node):
             self.get_logger().debug(f'Repulsive magnitude={math.hypot(repulsive_force_x, repulsive_force_y):.2f}. Angle={math.degrees(math.atan2(self.repulsive_vec.y, self.repulsive_vec.x)):.2f} deg')
 
         cmd = Twist()
+
         if self.check_person():
             self.state = "found_person"
         else:

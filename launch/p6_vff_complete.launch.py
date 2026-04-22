@@ -130,7 +130,7 @@ def generate_launch_description():
 
     optical_frame = DeclareLaunchArgument(
         'optical_frame',
-        default_value='camera_color_optical_frame'
+        default_value='base_link'
     )
 
     include_yolo = IncludeLaunchDescription(
@@ -246,8 +246,8 @@ def generate_launch_description():
         include_yolo,
         include_yolo_3d,
         include_yolo_class_detector_3d,
-        # include_obstacle_detector,
+        include_obstacle_detector,
 
         #Mi nodo
-        # vff_controller_yolo
+        vff_controller_yolo
     ])
